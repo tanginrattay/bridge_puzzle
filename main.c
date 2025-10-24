@@ -6,7 +6,7 @@
 int map[50][50][6];
 
 void printmap(int n, int m) {
-    printf("##################################");
+    printf("##################################\n");
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
             if (map[i][j][3]) {
@@ -17,10 +17,15 @@ void printmap(int n, int m) {
         }
         putchar('\n');
         for (int j = 0; j < m; j++) {
-            if (map[i][j][2]) {
-                printf("%d-", map[i][j][0]);
+            if (map[i][j][0]) {
+                printf("%d", map[i][j][0]);
             } else {
-                printf("%d ", map[i][j][0]);
+                printf(" ", map[i][j][0]);
+            }
+            if (map[i][j][2]) {
+                printf("-");
+            } else {
+                printf(" ");
             }
         }
         putchar('\n');
@@ -41,9 +46,28 @@ int main () {
 
     printmap(n, m);
     
-    find_determined_by_path_search(n, m);
+    optimze(n, m);
 
     printmap(n, m);
+
+    int list[2500][2];
+    int list_size = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (map[i][j][5] > 0) {
+                list[list_size][0] = i;
+                list[list_size][1] = j;
+                list_size++;
+            }
+        }
+    }
+
+    int trigger = 0;
+
+    trigger = back_tracking(n, m, list, list_size);
+
+    printmap(n, m);
+
     getchar();
     getchar();
     return 0;
