@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <optimize.h>
+#include <backtracking.h>
 
 int map[50][50][5];
 
