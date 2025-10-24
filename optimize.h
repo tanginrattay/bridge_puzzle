@@ -1,63 +1,173 @@
 extern int map[50][50][6];
 
-void find_determined_by_path_search(int n, int m) {
+// 检查某个方向是否可以连接，并返回可连接的节点坐标
+int check_direction_connection(int i, int j, int dir, int* target_i, int* target_j, int n, int m) {
+    int step = 1;
+    
+    while (1) {
+        int current_i = i, current_j = j;
+        
+        // 计算当前检查的坐标
+        switch(dir) {
+            case 1: current_i = i - step; break; // 上
+            case 2: current_j = j + step; break; // 右
+            case 3: current_i = i + step; break; // 下
+            case 4: current_j = j - step; break; // 左
+        }
+        
+        // 检查边界
+        if (current_i < 0 || current_i >= n || current_j < 0 || current_j >= m) {
+            return 0; // 超出边界，无法连接
+        }
+        
+        // 检查是否遇到非空节点
+        if (map[current_i][current_j][0] > 0) {
+            // 找到非空节点，检查是否可连接
+            // 计算邻居的已连接数量和剩余连接数
+            int neighbor_connected_count = 0;
+            for (int ndir = 1; ndir <= 4; ndir++) {
+                if (map[current_i][current_j][ndir] == 1) {
+                    neighbor_connected_count++;
+                }
+            }
+            int neighbor_remaining = map[current_i][current_j][0] - neighbor_connected_count;
+            
+            if (neighbor_remaining > 0) {
+                *target_i = current_i;
+                *target_j = current_j;
+                return 1; // 找到可连接节点
+            } else {
+                return 0; // 遇到已连接满的节点，无法连接
+            }
+        }
+        
+        // 检查是否遇到已占用的空节点
+        if (map[current_i][current_j][5] < 0) {
+            return 0; // 遇到已占用的空节点，无法连接
+        }
+        
+        step++;
+    }
+}
+
+void optimize(int n, int m) {
     int changed;
     do {
         changed = 0;
+        
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
-                int current_degree = map[i][j][5];
-                // 只处理有值的节点
-                if (current_degree <= 0) continue;
-                // 计算已连接的数量
+                // 只处理非空节点
+                if (map[i][j][0] <= 0) continue;
+                
+                // 计算当前剩余连接数 = 初始度数 - 已连接方向数
                 int connected_count = 0;
                 for (int dir = 1; dir <= 4; dir++) {
                     if (map[i][j][dir] == 1) {
                         connected_count++;
                     }
                 }
-                // 计算剩余需要连接的数量
-                int remaining_connections = current_degree - connected_count;
+                int remaining_connections = map[i][j][0] - connected_count;
+                
                 // 如果剩余连接数为0，跳过此节点
                 if (remaining_connections <= 0) continue;
-                // 检查四个方向
+                
+                // 检查四个方向，统计可连接的节点数量
+                int available_connections = 0;
+                int target_i[4] = {0};
+                int target_j[4] = {0};
+                int dirs[4] = {0};
+                
                 for (int dir = 1; dir <= 4; dir++) {
-                    // 如果这个方向已经确定连接状态，跳过
-                    if (map[i][j][dir] != 0) continue;
+                    // 如果这个方向已经连接，跳过
+                    if (map[i][j][dir] == 1) continue;
                     
-                    int ni = i, nj = j;  // 邻居节点坐标
-                    switch(dir) {
-                        case 1: ni = i - 1; break; // UP
-                        case 2: ni = i + 1; break; // DOWN
-                        case 3: nj = j - 1; break; // LEFT
-                        case 4: nj = j + 1; break; // RIGHT
+                    // 检查这个方向是否可以连接
+                    int ti, tj;
+                    if (check_direction_connection(i, j, dir, &ti, &tj, n, m)) {
+                        target_i[available_connections] = ti;
+                        target_j[available_connections] = tj;
+                        dirs[available_connections] = dir;
+                        available_connections++;
+                    }
+                }
+                
+                // 如果可连接节点数量等于剩余连接数，建立所有连接
+                if (available_connections == remaining_connections && available_connections > 0) {
+                    for (int k = 0; k < available_connections; k++) {
+                        int dir = dirs[k];
+                        int ti = target_i[k];
+                        int tj = target_j[k];
+                        
+                        // 标记起点节点的连接方向
+                        map[i][j][dir] = 1;
+                        
+                        // 标记终点节点的反向连接
+                        int reverse_dir;
+                        switch(dir) {
+                            case 1: reverse_dir = 3; break; // 上 -> 下
+                            case 2: reverse_dir = 4; break; // 右 -> 左
+                            case 3: reverse_dir = 1; break; // 下 -> 上
+                            case 4: reverse_dir = 2; break; // 左 -> 右
+                        }
+                        map[ti][tj][reverse_dir] = 1;
+                        
+                        // 标记路径上的空节点
+                        int step = 1;
+                        while (1) {
+                            int current_i = i, current_j = j;
+                            
+                            // 计算当前路径节点坐标
+                            switch(dir) {
+                                case 1: current_i = i - step; break;
+                                case 2: current_j = j + step; break;
+                                case 3: current_i = i + step; break;
+                                case 4: current_j = j - step; break;
+                            }
+                            
+                            // 如果到达终点节点，停止
+                            if (current_i == ti && current_j == tj) break;
+                            
+                            // 标记路径上的空节点
+                            if (map[current_i][current_j][0] == 0) {
+                                map[current_i][current_j][5] = -1; // 标记为已占用
+                                
+                                // 标记路径节点的双向连接
+                                if (dir == 1 || dir == 3) { // 垂直方向
+                                    map[current_i][current_j][1] = 1; // 上
+                                    map[current_i][current_j][3] = 1; // 下
+                                } else { // 水平方向
+                                    map[current_i][current_j][2] = 1; // 右
+                                    map[current_i][current_j][4] = 1; // 左
+                                }
+                            }
+                            
+                            step++;
+                        }
+                        
+                        changed = 1;
+                        
+                        printf("Connected (%d,%d) to (%d,%d) with direction %d\n", 
+                               i, j, ti, tj, dir);
                     }
                     
-                    // 检查边界和是否有连接器
-                    if (ni >= 0 && ni < n && nj >= 0 && nj < m && map[ni][nj][5] > 0) {
-                        int neighbor_degree = map[ni][nj][5];
-                        
-                        // 计算邻居的已连接数量和剩余连接数
-                        int neighbor_connected_count = 0;
-                        for (int ndir = 1; ndir <= 4; ndir++) {
-                            if (map[ni][nj][ndir] == 1) {
-                                neighbor_connected_count++;
-                            }
+                    // 更新当前节点的剩余连接数
+                    map[i][j][5] = map[i][j][0];
+                    for (int dir = 1; dir <= 4; dir++) {
+                        if (map[i][j][dir] == 1) {
+                            map[i][j][5]--;
                         }
-                        int neighbor_remaining = neighbor_degree - neighbor_connected_count;
-                        // 如果剩余连接数相等且都大于0，建立连接
-                        if (remaining_connections == neighbor_remaining && remaining_connections > 0) {
-                            // 标记这个连接
-                            map[i][j][dir] = 1;
-                            int reverse_dir = (dir % 2 == 1) ? dir + 1 : dir - 1;
-                            map[ni][nj][reverse_dir] = 1;
-                            
-                            changed = 1;
-                            // 更新剩余连接数
-                            remaining_connections--;
-                            // 如果当前节点剩余连接数为0，跳出内层循环
-                            if (remaining_connections == 0) {
-                                break;
+                    }
+                    
+                    // 更新所有目标节点的剩余连接数
+                    for (int k = 0; k < available_connections; k++) {
+                        int ti = target_i[k];
+                        int tj = target_j[k];
+                        
+                        map[ti][tj][5] = map[ti][tj][0];
+                        for (int dir = 1; dir <= 4; dir++) {
+                            if (map[ti][tj][dir] == 1) {
+                                map[ti][tj][5]--;
                             }
                         }
                     }
