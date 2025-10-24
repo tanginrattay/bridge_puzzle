@@ -23,16 +23,7 @@ int check_direction_connection(int i, int j, int dir, int* target_i, int* target
         // 检查是否遇到非空节点
         if (map[current_i][current_j][0] > 0) {
             // 找到非空节点，检查是否可连接
-            // 计算邻居的已连接数量和剩余连接数
-            int neighbor_connected_count = 0;
-            for (int ndir = 1; ndir <= 4; ndir++) {
-                if (map[current_i][current_j][ndir] == 1) {
-                    neighbor_connected_count++;
-                }
-            }
-            int neighbor_remaining = map[current_i][current_j][0] - neighbor_connected_count;
-            
-            if (neighbor_remaining > 0) {
+            if (map[current_i][current_j][5] > 0) {
                 *target_i = current_i;
                 *target_j = current_j;
                 return 1; // 找到可连接节点
@@ -145,6 +136,9 @@ void optimize(int n, int m) {
                             step++;
                         }
                         
+                        // 更新终点节点的剩余连接数
+                        map[ti][tj][5]--;
+                        
                         changed = 1;
                         
                         printf("Connected (%d,%d) to (%d,%d) with direction %d\n", 
@@ -156,19 +150,6 @@ void optimize(int n, int m) {
                     for (int dir = 1; dir <= 4; dir++) {
                         if (map[i][j][dir] == 1) {
                             map[i][j][5]--;
-                        }
-                    }
-                    
-                    // 更新所有目标节点的剩余连接数
-                    for (int k = 0; k < available_connections; k++) {
-                        int ti = target_i[k];
-                        int tj = target_j[k];
-                        
-                        map[ti][tj][5] = map[ti][tj][0];
-                        for (int dir = 1; dir <= 4; dir++) {
-                            if (map[ti][tj][dir] == 1) {
-                                map[ti][tj][5]--;
-                            }
                         }
                     }
                 }
