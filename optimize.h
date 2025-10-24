@@ -1,3 +1,5 @@
+extern int map[50][50][6];
+
 void find_determined_by_path_search(int n, int m) {
     int changed;
     
