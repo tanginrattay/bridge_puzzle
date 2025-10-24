@@ -1,16 +1,13 @@
+int map[50][50][6]; // ：0-value，1-UP，2-DOWN，3-LEFT，4-RIGHT,5-calculating the value
 void find_determined_by_path_search(int n, int m) {
     int changed;
-    
     do {
         changed = 0;
-        
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
-                int current_degree = map[i][j][0];
-                
+                int current_degree = map[i][j][5];
                 // 只处理有值的节点
                 if (current_degree <= 0) continue;
-                
                 // 计算已连接的数量
                 int connected_count = 0;
                 for (int dir = 1; dir <= 4; dir++) {
@@ -18,19 +15,16 @@ void find_determined_by_path_search(int n, int m) {
                         connected_count++;
                     }
                 }
-                
                 // 计算剩余需要连接的数量
                 int remaining_connections = current_degree - connected_count;
-                
                 // 如果剩余连接数为0，跳过此节点
                 if (remaining_connections <= 0) continue;
-                
                 // 检查四个方向
                 for (int dir = 1; dir <= 4; dir++) {
                     // 如果这个方向已经确定连接状态，跳过
                     if (map[i][j][dir] != 0) continue;
                     
-                    int ni = i, nj = j;
+                    int ni = i, nj = j;  // 邻居节点坐标
                     switch(dir) {
                         case 1: ni = i - 1; break; // UP
                         case 2: ni = i + 1; break; // DOWN
@@ -39,8 +33,8 @@ void find_determined_by_path_search(int n, int m) {
                     }
                     
                     // 检查边界和是否有连接器
-                    if (ni >= 0 && ni < n && nj >= 0 && nj < m && map[ni][nj][0] > 0) {
-                        int neighbor_degree = map[ni][nj][0];
+                    if (ni >= 0 && ni < n && nj >= 0 && nj < m && map[ni][nj][5] > 0) {
+                        int neighbor_degree = map[ni][nj][5];
                         
                         // 计算邻居的已连接数量和剩余连接数
                         int neighbor_connected_count = 0;
