@@ -3,12 +3,12 @@
 #include "optimize.h"
 #include "backtracking.h"
 
-int map[50][50][6];
+int map[51][51][6];
 
 void printmap(int n, int m) {
     printf("##################################\n");
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
             if (map[i][j][1]) {
                 printf("| ");
             } else {
@@ -16,8 +16,8 @@ void printmap(int n, int m) {
             }
         }
         putchar('\n');
-        for (int j = 0; j < m; j++) {
-            if (map[i][j][0]) {
+        for (int j = 1; j <= m; j++) {
+            if (map[i][j][0] > 0) {
                 printf("%d", map[i][j][0]);
             } else {
                 printf(" ", map[i][j][0]);
@@ -36,8 +36,8 @@ void printmap(int n, int m) {
 int main () {
     int n, m;
     scanf("%d %d", &n, &m);
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
             int tmp;
             scanf("%d", &tmp);
             map[i][j][0] = map[i][j][5] = tmp;
