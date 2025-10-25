@@ -4,6 +4,7 @@
 #include "backtracking.h"
 
 int map[51][51][6];
+int trigger = 0;
 
 void printmap(int n, int m) {
     printf("##################################\n");
@@ -44,32 +45,30 @@ int main () {
         }
     } 
 
-    printmap(n, m);
+    // printmap(n, m);
     
-    optimize(n, m);
-
-    printmap(n, m);
-
-    // int **list = (int **)malloc(2500 * sizeof(int *));
-    // for (int i = 0; i < 2500; i++) {
-    //     list[i] = (int *)malloc(2 * sizeof(int));
-    // }
-    // int list_size = 0;
-    // for (int i = 0; i < n; i++) {
-    //     for (int j = 0; j < m; j++) {
-    //         if (map[i][j][5] > 0) {
-    //             list[list_size][0] = i;
-    //             list[list_size][1] = j;
-    //             list_size++;
-    //         }
-    //     }
-    // }
-
-    // int trigger = 0;
-
-    // trigger = back_tracking(n, m, list, list_size);
+    // optimize(n, m);
 
     // printmap(n, m);
+
+    int **list = (int **)malloc(2601 * sizeof(int *));
+    for (int i = 0; i < 2601; i++) {
+        list[i] = (int *)malloc(2 * sizeof(int));
+    }
+    int list_size = 0;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            if (map[i][j][5] > 0) {
+                list[list_size][0] = i;
+                list[list_size][1] = j;
+                list_size++;
+            }
+        }
+    }
+
+    back_tracking(n, m, list, list_size, 0);
+
+    printmap(n, m);
 
     getchar();
     getchar();
