@@ -16,6 +16,10 @@ int find_up(int n,int m,int x,int y){
             if(map[i][y][5] == 0){
                 return 0;
             }
+            for(int k=i+1;k<x;k++){
+                map[k][y][1] = 1;
+                map[k][y][3] = 1; 
+            }
             return i;
         }
         else if(map[i][y][0] == -1){
@@ -32,6 +36,10 @@ int find_down(int n,int m,int x,int y){
         if(map[i][y][0]>0){
             if(map[i][y][5] == 0){
                 return 0;
+            }
+            for(int k=x+1;k<i;k++){
+                map[k][y][1] = 1;
+                map[k][y][3] = 1; 
             }
             return i;
         }
@@ -50,6 +58,10 @@ int find_left(int n,int m,int x,int y){
             if(map[x][j][5] == 0){
                 return 0;
             }
+            for(int k=j+1;k<y;k++){
+                map[x][k][2] = 1;
+                map[x][k][4] = 1; 
+            }
             return j;
         }
         else if(map[x][j][0] == -1){
@@ -66,6 +78,10 @@ int find_right(int n,int m,int x,int y){
         if(map[x][j][0]>0){
             if(map[x][j][5] == 0){
                 return 0;
+            }
+            for(int k=y+1;k<j;k++){
+                map[x][k][2] = 1;
+                map[x][k][4] = 1; 
             }
             return j;
         }
@@ -86,6 +102,8 @@ void clear_up(int n,int m,int x,int y){
         }
         else if(map[i][y][0] == -1){
             map[i][y][0] = 0;
+            map[i][y][1] = 0;
+            map[i][y][3] = 0;
         }
         else{
             return;
@@ -101,6 +119,8 @@ void clear_right(int n,int m,int x,int y){
         }
         else if(map[x][j][0] == -1){
             map[x][j][0] = 0;
+            map[x][j][2] = 0;
+            map[x][j][4] = 0;
         }
         else{
             return;
@@ -116,6 +136,8 @@ void clear_down(int n,int m,int x,int y){
         }
         else if(map[i][y][0] == -1){
             map[i][y][0] = 0;
+            map[i][y][1] = 0;
+            map[i][y][3] = 0;
         }
         else{
             return;
@@ -131,6 +153,8 @@ void clear_left(int n,int m,int x,int y){
         }
         else if(map[x][j][0] == -1){
             map[x][j][0] = 0;
+            map[x][j][2] = 0;
+            map[x][j][4] = 0;
         }
         else{
             return;
