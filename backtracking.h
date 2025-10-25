@@ -164,6 +164,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                 map[x][y][5]--;
                 map[up][y][5]--;
                 back_tracking(n,m,c,c_size,index+1);
+                if(trigger == 1) return;
                 map[x][y][1] = 0;
                 map[up][y][3] = 0;
                 map[x][y][5]++;
@@ -178,6 +179,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                 map[x][y][5]--;
                 map[x][right][5]--;
                 back_tracking(n,m,c,c_size,index+1);
+                if(trigger == 1) return;
                 map[x][y][2] = 0;
                 map[x][right][4] = 0;
                 map[x][y][5]++;
@@ -192,6 +194,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                 map[x][y][5]--;
                 map[down][y][5]--;
                 back_tracking(n,m,c,c_size,index+1);
+                if(trigger == 1) return;
                 map[x][y][3] = 0;
                 map[down][y][1] = 0;
                 map[x][y][5]++;
@@ -206,6 +209,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                 map[x][y][5]--;
                 map[x][left][5]--;
                 back_tracking(n,m,c,c_size,index+1);
+                if(trigger == 1) return;
                 map[x][y][4] = 0;
                 map[x][left][2] = 0;
                 map[x][y][5]++;
@@ -231,6 +235,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[up][y][5]--;
                     map[x][right][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][1] = 0;
                     map[up][y][3] = 0;
                     map[x][y][2] = 0;
@@ -253,6 +258,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[up][y][5]--;
                     map[down][y][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][1] = 0;
                     map[up][y][3] = 0;
                     map[x][y][3] = 0;
@@ -275,6 +281,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[up][y][5]--;
                     map[x][left][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][1] = 0;
                     map[up][y][3] = 0;
                     map[x][y][4] = 0;
@@ -297,6 +304,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[x][right][5]--;
                     map[down][y][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][2] = 0;
                     map[x][right][4] = 0;
                     map[x][y][3] = 0;
@@ -319,6 +327,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[x][right][5]--;
                     map[x][left][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][2] = 0;
                     map[x][right][4] = 0;
                     map[x][y][4] = 0;
@@ -341,6 +350,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[down][y][5]--;
                     map[x][left][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][3] = 0;
                     map[down][y][1] = 0;
                     map[x][y][4] = 0;
@@ -363,6 +373,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[x][y][5]--;
                     map[up][y][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][1] = 0;
                     map[up][y][3] = 0;
                     map[x][y][5]++;
@@ -377,6 +388,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[x][y][5]--;
                     map[x][right][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][2] = 0;
                     map[x][right][4] = 0;
                     map[x][y][5]++;
@@ -391,6 +403,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[x][y][5]--;
                     map[down][y][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][3] = 0;
                     map[down][y][1] = 0;
                     map[x][y][5]++;
@@ -405,6 +418,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[x][y][5]--;
                     map[x][left][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][4] = 0;
                     map[x][left][2] = 0;
                     map[x][y][5]++;
@@ -435,6 +449,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[x][right][5]--;
                     map[down][y][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][1] = 0;
                     map[up][y][3] = 0;
                     map[x][y][2] = 0;
@@ -465,6 +480,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[x][right][5]--;
                     map[x][left][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][1] = 0;
                     map[up][y][3] = 0;
                     map[x][y][2] = 0;
@@ -495,6 +511,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[down][y][5]--;
                     map[x][left][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][1] = 0;
                     map[up][y][3] = 0;
                     map[x][y][3] = 0;
@@ -525,6 +542,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[down][y][5]--;
                     map[x][left][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][2] = 0;
                     map[x][right][4] = 0;
                     map[x][y][3] = 0;
@@ -555,6 +573,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[up][y][5]--;
                     map[x][right][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][1] = 0;
                     map[up][y][3] = 0;
                     map[x][y][2] = 0;
@@ -577,6 +596,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[up][y][5]--;
                     map[down][y][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][1] = 0;
                     map[up][y][3] = 0;
                     map[x][y][3] = 0;
@@ -599,6 +619,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[up][y][5]--;
                     map[x][left][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][1] = 0;
                     map[up][y][3] = 0;
                     map[x][y][4] = 0;
@@ -621,6 +642,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[x][right][5]--;
                     map[down][y][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][2] = 0;
                     map[x][right][4] = 0;
                     map[x][y][3] = 0;
@@ -643,6 +665,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[x][right][5]--;
                     map[x][left][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][2] = 0;
                     map[x][right][4] = 0;
                     map[x][y][4] = 0;
@@ -654,8 +677,8 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                 //清除标记
                     clear_right(n,m,x,y);
                     clear_left(n,m,x,y);
-                    down = find_down(n,m,x,y);
-                    left = find_left(n,m,x,y);
+                 down = find_down(n,m,x,y);
+                 left = find_left(n,m,x,y);
                 if(down && left){
                     map[x][y][3] = 1;
                     map[down][y][1] = 1;
@@ -665,6 +688,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[down][y][5]--;
                     map[x][left][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][3] = 0;
                     map[down][y][1] = 0;
                     map[x][y][4] = 0;
@@ -673,7 +697,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[down][y][5]++;
                     map[x][left][5]++;
                 }
-                //清除标记
+                 //清除标记
                     clear_down(n,m,x,y);
                     clear_left(n,m,x,y);
 
@@ -687,6 +711,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[x][y][5]--;
                     map[up][y][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][1] = 0;
                     map[up][y][3] = 0;
                     map[x][y][5]++;
@@ -701,6 +726,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[x][y][5]--;
                     map[x][right][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][2] = 0;
                     map[x][right][4] = 0;
                     map[x][y][5]++;
@@ -715,6 +741,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[x][y][5]--;
                     map[down][y][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][3] = 0;
                     map[down][y][1] = 0;
                     map[x][y][5]++;
@@ -729,6 +756,7 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                     map[x][y][5]--;
                     map[x][left][5]--;
                     back_tracking(n,m,c,c_size,index+1);
+                    if(trigger == 1) return;
                     map[x][y][4] = 0;
                     map[x][left][2] = 0;
                     map[x][y][5]++;
