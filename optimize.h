@@ -1,4 +1,4 @@
-extern int map[50][50][6];
+extern int map[51][51][6];
 
 // 检查某个方向是否可以连接，并返回可连接的节点坐标
 int check_direction_connection(int i, int j, int dir, int* target_i, int* target_j, int n, int m) {
@@ -11,12 +11,13 @@ int check_direction_connection(int i, int j, int dir, int* target_i, int* target
         switch(dir) {
             case 1: current_i = i - step; break; // 上
             case 2: current_j = j + step; break; // 右
+            
             case 3: current_i = i + step; break; // 下
             case 4: current_j = j - step; break; // 左
         }
         
-        // 检查边界
-        if (current_i < 0 || current_i >= n || current_j < 0 || current_j >= m) {
+        // 检查边界 (坐标从1开始，所以边界是1到n和1到m)
+        if (current_i < 1 || current_i > n || current_j < 1 || current_j > m) {
             return 0; // 超出边界，无法连接
         }
         
@@ -33,7 +34,7 @@ int check_direction_connection(int i, int j, int dir, int* target_i, int* target
         }
         
         // 检查是否遇到已占用的空节点
-        if (map[current_i][current_j][5] < 0) {
+        if (map[current_i][current_j][0] == -1) {
             return 0; // 遇到已占用的空节点，无法连接
         }
         
@@ -46,8 +47,9 @@ void optimize(int n, int m) {
     do {
         changed = 0;
         
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
+        // 循环从1开始到n和m
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
                 // 只处理非空节点
                 if (map[i][j][0] <= 0) continue;
                 
@@ -121,7 +123,7 @@ void optimize(int n, int m) {
                             
                             // 标记路径上的空节点
                             if (map[current_i][current_j][0] == 0) {
-                                map[current_i][current_j][5] = -1; // 标记为已占用
+                                map[current_i][current_j][0] = -1; // 标记为已占用
                                 
                                 // 标记路径节点的双向连接
                                 if (dir == 1 || dir == 3) { // 垂直方向
