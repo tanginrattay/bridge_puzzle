@@ -143,8 +143,8 @@ void optimize(int n, int m) {
                         
                         changed = 1;
                         
-                        printf("Connected (%d,%d) to (%d,%d) with direction %d\n", 
-                               i, j, ti, tj, dir);
+                        /* printf("Connected (%d,%d) to (%d,%d) with direction %d\n", 
+                               i, j, ti, tj, dir); */
                     }
                     
                     // 更新当前节点的剩余连接数

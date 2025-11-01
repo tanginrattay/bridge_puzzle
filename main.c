@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "optimize.h"
 #include "backtracking.h"
 
@@ -45,6 +46,9 @@ int main () {
         }
     } 
 
+    // start timing after input is read
+    time_t t_start = time(NULL);
+
     printmap(n, m);
     
     optimize(n, m);
@@ -58,25 +62,7 @@ int main () {
     int list_size = 0;
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= m; j++) {
-            if (map[i][j][5] == 1) {
-                list[list_size][0] = i;
-                list[list_size][1] = j;
-                list_size++;
-            }
-        }
-    }
-    for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= m; j++) {
-            if (map[i][j][5] == 2) {
-                list[list_size][0] = i;
-                list[list_size][1] = j;
-                list_size++;
-            }
-        }
-    }
-    for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= m; j++) {
-            if (map[i][j][5] == 3) {
+            if (map[i][j][5] > 0) {
                 list[list_size][0] = i;
                 list[list_size][1] = j;
                 list_size++;
@@ -87,6 +73,14 @@ int main () {
     back_tracking(n, m, list, list_size, 0);
 
     printmap(n, m);
+
+    // stop timing and print elapsed time (hh:mm:ss)
+    time_t t_end = time(NULL);
+    int elapsed = (int)difftime(t_end, t_start);
+    int hours = elapsed / 3600;
+    int minutes = (elapsed % 3600) / 60;
+    int seconds = elapsed % 60;
+    printf("time:%02d:%02d:%02d\n", hours, minutes, seconds);
 
     getchar();
     getchar();
