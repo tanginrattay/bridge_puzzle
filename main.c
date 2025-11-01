@@ -58,7 +58,25 @@ int main () {
     int list_size = 0;
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= m; j++) {
-            if (map[i][j][5] > 0) {
+            if (map[i][j][5] == 1) {
+                list[list_size][0] = i;
+                list[list_size][1] = j;
+                list_size++;
+            }
+        }
+    }
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            if (map[i][j][5] == 2) {
+                list[list_size][0] = i;
+                list[list_size][1] = j;
+                list_size++;
+            }
+        }
+    }
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            if (map[i][j][5] == 3) {
                 list[list_size][0] = i;
                 list[list_size][1] = j;
                 list_size++;
