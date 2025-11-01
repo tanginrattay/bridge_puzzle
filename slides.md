@@ -45,6 +45,79 @@ revealOptions:
 --v--
 **第一阶段：确定性优化 (optimize.h)**
 * 采用**贪心策略**和**剪枝思想**，遍历所有节点，寻找可以**唯一确定**连线关系的节点。
+* **贪心策略**
+```cpp
+// 贪心策略：当可连接节点数等于剩余连接数时，立即建立所有连接
+if (available_connections == remaining_connections && available_connections > 0) {
+    for (int k = 0; k < available_connections; k++) {
+        // 立即建立连接，不考虑后续影响
+        map[i][j][dir] = 1;
+        map[ti][tj][reverse_dir[dir]] = 1;
+        // ...
+    }
+}
+```
+* 当可连接节点数等于剩余连接数时，立即建立所有连接不考虑后续影响
+--v--
+* **贪心策略**
+```cpp
+// 贪心条件：剩余接口数 = 可连接邻居数
+int remaining_connections = map[i][j][0] - connected_count;
+int available_connections = 0;
+
+// 统计可连接邻居
+for (int dir = 1; dir <= 4; dir++) {
+    if (check_direction_connection(i, j, dir, &ti, &tj, n, m)) {
+        available_connections++;
+    }
+}
+
+// 贪心决策点
+if (available_connections == remaining_connections) {
+    // 必须连接所有可连接邻居
+}
+```
+--v--
+* **剪枝思想**
+* 1. 提前终止剪枝
+```cpp
+// 剪枝1：跳过已满足度数的节点
+if (remaining_connections <= 0) continue;
+
+// 剪枝2：跳过已连接的方向
+if (map[i][j][dir] == 1) continue;
+
+// 剪枝3：边界检查提前终止
+if (current_i < 1 || current_i > n || current_j < 1 || current_j > m) {
+    return 0;
+}
+```
+--v--
+* 2. 约束传播剪枝
+```cpp
+// 剪枝4：遇到占用空节点立即终止
+if (map[current_i][current_j][0] == -1) {
+    return 0;
+}
+
+// 剪枝5：遇到已满节点立即终止  
+if (map[current_i][current_j][0] > 0) {
+    if (map[current_i][current_j][5] > 0) {
+        // 可连接
+    } else {
+        return 0; // 已满，不可连接
+    }
+}
+```
+--v--
+* 3. 空间状态剪枝
+```cpp
+// 剪枝6：迭代收敛检测
+do {
+    changed = 0;
+    // 处理所有节点...
+} while (changed); // 无变化时终止循环
+```
 * **确定条件：** 如果一个节点的**剩余接口数** `map[i][j][5]` 等于其**可连接的邻居节点数** `available_connections`，则该节点必须与所有可连接的邻居建立连线。
 * 不断循环此过程，直到一轮循环中没有任何新的连线被确定，以最大化预处理。
 --v--
