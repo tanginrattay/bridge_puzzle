@@ -55,27 +55,8 @@ int find_right(int n,int m,int x,int y){
     return 0;
 };
 //注意还有清除-1标记的函数
-void clear_up(int n,int m,int x,int y){
-    for(int i = x-1;i>0;i--){
-        if(map[i][y][0]>0){
-            return;
-        }
-        else if(map[i][y][0] == -1){
-            map[i][y][0] = 0;
-            map[i][y][1] = 0;
-            map[i][y][3] = 0;
-        }
-        else{
-            return;
-        }
-    }
-    return;
-
-}
-
-
-void clear_left(int n,int m,int x,int y){
-    for(int j = y-1;j>0;j--){
+void clear_right(int n,int m,int x,int y){
+    for(int j = y+1;j<=m;j++){
         if(map[x][j][0]>0){
             return;
         }
@@ -83,6 +64,23 @@ void clear_left(int n,int m,int x,int y){
             map[x][j][0] = 0;
             map[x][j][2] = 0;
             map[x][j][4] = 0;
+        }
+        else{
+            return;
+        }
+    }
+    return;
+
+};
+void clear_down(int n,int m,int x,int y){
+    for(int i = x+1;i<=n;i++){
+        if(map[i][y][0]>0){
+            return;
+        }
+        else if(map[i][y][0] == -1){
+            map[i][y][0] = 0;
+            map[i][y][1] = 0;
+            map[i][y][3] = 0;
         }
         else{
             return;

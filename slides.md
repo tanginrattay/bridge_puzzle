@@ -59,7 +59,7 @@ if (available_connections == remaining_connections && available_connections > 0)
 ```
 * 当可连接节点数等于剩余连接数时，立即建立所有连接不考虑后续影响
 --v--
-* **贪心策略**
+ **贪心策略**
 ```cpp
 // 贪心条件：剩余接口数 = 可连接邻居数
 int remaining_connections = map[i][j][0] - connected_count;
@@ -317,27 +317,6 @@ void optimize(int n, int m) {
 ### 2. 回溯阶段 (`backtracking.h`)
 --v--
 ```cpp [1-21]
-int find_up(int n,int m,int x,int y){
-    for(int i = x-1;i>0;i--){
-        if(map[i][y][0]>0){
-            if(map[i][y][5] == 0){
-                return 0;
-            }
-            for(int k=i+1;k<x;k++){
-                map[k][y][1] = 1;
-                map[k][y][3] = 1; 
-            }
-            return i;
-        }
-        else if(map[i][y][0] == -1){
-            return 0;
-        }
-        else{
-            map[i][y][0] = -1;
-        }
-    }
-    return 0;
-};
 int find_down(int n,int m,int x,int y){
     for(int i = x+1;i<=n;i++){
         if(map[i][y][0]>0){
@@ -359,27 +338,7 @@ int find_down(int n,int m,int x,int y){
     }
     return 0;
 };
-int find_left(int n,int m,int x,int y){
-    for(int j = y-1;j>0;j--){
-        if(map[x][j][0]>0){
-            if(map[x][j][5] == 0){
-                return 0;
-            }
-            for(int k=j+1;k<y;k++){
-                map[x][k][2] = 1;
-                map[x][k][4] = 1; 
-            }
-            return j;
-        }
-        else if(map[x][j][0] == -1){
-            return 0;
-        }
-        else{
-            map[x][j][0] = -1;
-        }
-    }
-    return 0;
-};
+
 int find_right(int n,int m,int x,int y){
     for(int j = y+1;j<=m;j++){
         if(map[x][j][0]>0){
@@ -403,30 +362,14 @@ int find_right(int n,int m,int x,int y){
 };
 
 ```
-**`find_up/down/left/right` 函数：**
+**`find_down/right` 函数：**
 * 功能与 `check_direction_connection` 类似，但更进一步：
     * **不仅检查可行性，还同时标记路径上的空节点** (`map[...][0] = -1`)，实现剪枝。
     * 如果找到目标节点，返回其坐标；如果遇到障碍或边界，返回 `0`。
 --v--
 ```cpp [2-18]
 //注意还有清除-1标记的函数
-void clear_up(int n,int m,int x,int y){
-    for(int i = x-1;i>0;i--){
-        if(map[i][y][0]>0){
-            return;
-        }
-        else if(map[i][y][0] == -1){
-            map[i][y][0] = 0;
-            map[i][y][1] = 0;
-            map[i][y][3] = 0;
-        }
-        else{
-            return;
-        }
-    }
-    return;
 
-}
 void clear_right(int n,int m,int x,int y){
     for(int j = y+1;j<=m;j++){
         if(map[x][j][0]>0){
@@ -461,34 +404,15 @@ void clear_down(int n,int m,int x,int y){
     return;
 
 };
-void clear_left(int n,int m,int x,int y){
-    for(int j = y-1;j>0;j--){
-        if(map[x][j][0]>0){
-            return;
-        }
-        else if(map[x][j][0] == -1){
-            map[x][j][0] = 0;
-            map[x][j][2] = 0;
-            map[x][j][4] = 0;
-        }
-        else{
-            return;
-        }
-    }
-    return;
-
-};
 
 ```
-**`clear_up/down/left/right` 函数：**
+**`clear_down/right` 函数：**
 * **回溯的关键操作：** 清除由 `find_` 函数在当前路径上设置的 `-1` 标记及其连接状态，恢复现场，以便进行下一个方向的试探。
 --v--
 
 **`back_tracking` 函数：**
 * **基线条件：** 当 `index == c_size` 时，表示所有有接口的节点都已处理完毕，设置 `trigger = 1` 成功返回。
-* **递归逻辑：** * 根据当前节点 $(x, y)$ 的**初始类型** (`type = map[x][y][0]`) 和**剩余接口数** (`rem = map[x][y][5]`)，确定需要尝试的连线组合。
-    * 例如，`type=1` 时，尝试**上、右、下、左**四个方向的单边连接（1种组合）。
-    * `type=2, rem=2` 时，尝试**上-右, 上-下, ...** 等所有六种双边连接（2种组合）。
+* **递归逻辑：** * 根据当前节点 $(x, y)$ 的**剩余接口数** (`rem = map[x][y][5]`)，确定需要尝试的连线组合。
     * **试探 -> 递归 -> 回溯：** 对于每种成功的连线尝试：
         1.  调用 `find_` 标记路径。
         2.  更新起点和终点的连接状态和剩余接口数。
@@ -499,501 +423,33 @@ void clear_left(int n,int m,int x,int y){
 
 --v--
 
-```cpp [2-31]
+```cpp [2-14|16-48]
 extern int trigger;
-void back_tracking(int n,int m,int** c,int c_size,int index){
-     //终点，num==c_size
-     if(index == c_size){
-            trigger = 1;
+ void back_tracking(int n,int m,int** c,int c_size,int index){
+        //终点，num==c_size
+        if(index == c_size){
+                trigger = 1;
+                return;
+        }
+        //非终点就要判断是否存在接口
+        int x = c[index][0];
+        int y = c[index][1];
+        if(map[x][y][5] == 0){
+            back_tracking(n,m,c,c_size,index+1);
             return;
-     }
-     //非终点就要判断是否存在接口
-     int x = c[index][0];
-     int y = c[index][1];
-     if(map[x][y][5] == 0){
-        back_tracking(n,m,c,c_size,index+1);
-        return;
-     }
-     //若存在接口，则进行试探
-     else{
-        int type = map[x][y][0];
-        if(type == 1){
-            int up = find_up(n,m,x,y);
-            if(up){
-                map[x][y][1] = 1;
-                map[up][y][3] = 1;
-                map[x][y][5]--;
-                map[up][y][5]--;
-                back_tracking(n,m,c,c_size,index+1);
-                if(trigger == 1) return;
-                map[x][y][1] = 0;
-                map[up][y][3] = 0;
-                map[x][y][5]++;
-                map[up][y][5]++;
-            }
-            //清除标记
-                clear_up(n,m,x,y);
-            int right = find_right(n,m,x,y);
-            if(right){
-                map[x][y][2] = 1;
-                map[x][right][4] = 1;
-                map[x][y][5]--;
-                map[x][right][5]--;
-                back_tracking(n,m,c,c_size,index+1);
-                if(trigger == 1) return;
-                map[x][y][2] = 0;
-                map[x][right][4] = 0;
-                map[x][y][5]++;
-                map[x][right][5]++; 
-            }
-            //清除标记
-                clear_right(n,m,x,y);
-            int down = find_down(n,m,x,y);
-            if(down){
-                map[x][y][3] = 1;
-                map[down][y][1] = 1;
-                map[x][y][5]--;
-                map[down][y][5]--;
-                back_tracking(n,m,c,c_size,index+1);
-                if(trigger == 1) return;
-                map[x][y][3] = 0;
-                map[down][y][1] = 0;
-                map[x][y][5]++;
-                map[down][y][5]++;
-            }
-               //清除标记
-                clear_down(n,m,x,y);
-            int left = find_left(n,m,x,y);
-            if(left){
-                map[x][y][4] = 1;
-                map[x][left][2] = 1;
-                map[x][y][5]--;
-                map[x][left][5]--;
-                back_tracking(n,m,c,c_size,index+1);
-                if(trigger == 1) return;
-                map[x][y][4] = 0;
-                map[x][left][2] = 0;
-                map[x][y][5]++;
-                map[x][left][5]++;
-            }
-            //清除标记
-                clear_left(n,m,x,y);    
         }
-        else if(type == 2){
-            //先确定剩余接口数
+        //若存在接口，则进行试探
+        else{
             int rem = map[x][y][5];
-            if(rem == 2){
-                //确定起始边
-                int up,right,down,left;
-                 up = find_up(n,m,x,y);
-                 right = find_right(n,m,x,y);
-                if(up && right){
-                    map[x][y][1] = 1;
-                    map[up][y][3] = 1;
-                    map[x][y][2] = 1;
-                    map[x][right][4] = 1;
-                    map[x][y][5] -= 2;
-                    map[up][y][5]--;
-                    map[x][right][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][1] = 0;
-                    map[up][y][3] = 0;
-                    map[x][y][2] = 0;
-                    map[x][right][4] = 0;
-                    map[x][y][5] += 2;
-                    map[up][y][5]++;
-                    map[x][right][5]++;
-                }
-                //清除标记
-                    clear_up(n,m,x,y);
-                    clear_right(n,m,x,y);
-                 up = find_up(n,m,x,y);
-                 down = find_down(n,m,x,y);
-                if(up && down){
-                    map[x][y][1] = 1;
-                    map[up][y][3] = 1;
-                    map[x][y][3] = 1;
-                    map[down][y][1] = 1;
-                    map[x][y][5] -= 2;
-                    map[up][y][5]--;
-                    map[down][y][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][1] = 0;
-                    map[up][y][3] = 0;
-                    map[x][y][3] = 0;
-                    map[down][y][1] = 0;
-                    map[x][y][5] += 2;
-                    map[up][y][5]++;
-                    map[down][y][5]++;
-                }
-                 //清除标记
-                    clear_up(n,m,x,y);
-                    clear_down(n,m,x,y);
-                 up = find_up(n,m,x,y);
-                 left = find_left(n,m,x,y);
-                if(up && left){
-                    map[x][y][1] = 1;
-                    map[up][y][3] = 1;
-                    map[x][y][4] = 1;
-                    map[x][left][2] = 1;
-                    map[x][y][5] -= 2;
-                    map[up][y][5]--;
-                    map[x][left][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][1] = 0;
-                    map[up][y][3] = 0;
-                    map[x][y][4] = 0;
-                    map[x][left][2] = 0;
-                    map[x][y][5] += 2;
-                    map[up][y][5]++;
-                    map[x][left][5]++;
-                }
-                 //清除标记
-                    clear_up(n,m,x,y);
-                    clear_left(n,m,x,y);
-                 right = find_right(n,m,x,y);
-                 down = find_down(n,m,x,y);
-                if(right && down){
-                    map[x][y][2] = 1;
-                    map[x][right][4] = 1;
-                    map[x][y][3] = 1;
-                    map[down][y][1] = 1;
-                    map[x][y][5] -= 2;
-                    map[x][right][5]--;
-                    map[down][y][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][2] = 0;
-                    map[x][right][4] = 0;
-                    map[x][y][3] = 0;
-                    map[down][y][1] = 0;
-                    map[x][y][5] += 2;
-                    map[x][right][5]++;
-                    map[down][y][5]++;
-                }
-                 //清除标记
-                    clear_right(n,m,x,y);
-                    clear_down(n,m,x,y);
-                 right = find_right(n,m,x,y);
-                 left = find_left(n,m,x,y);
-                if(right && left){
-                    map[x][y][2] = 1;
-                    map[x][right][4] = 1;
-                    map[x][y][4] = 1;
-                    map[x][left][2] = 1;
-                    map[x][y][5] -= 2;
-                    map[x][right][5]--;
-                    map[x][left][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][2] = 0;
-                    map[x][right][4] = 0;
-                    map[x][y][4] = 0;
-                    map[x][left][2] = 0;
-                    map[x][y][5] += 2;
-                    map[x][right][5]++;
-                    map[x][left][5]++;
-                }
-                //清除标记
-                    clear_right(n,m,x,y);
-                    clear_left(n,m,x,y);
-                 down = find_down(n,m,x,y);
-                 left = find_left(n,m,x,y);
-                if(down && left){
-                    map[x][y][3] = 1;
-                    map[down][y][1] = 1;
-                    map[x][y][4] = 1;
-                    map[x][left][2] = 1;
-                    map[x][y][5] -= 2;
-                    map[down][y][5]--;
-                    map[x][left][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][3] = 0;
-                    map[down][y][1] = 0;
-                    map[x][y][4] = 0;
-                    map[x][left][2] = 0;
-                    map[x][y][5] += 2;
-                    map[down][y][5]++;
-                    map[x][left][5]++;
-                }
-                 //清除标记
-                    clear_down(n,m,x,y);
-                    clear_left(n,m,x,y);
-            
-            }
-            //只有一个接口,和1一样
-            else{
-                int up = find_up(n,m,x,y);
-                if(up){
-                    map[x][y][1] = 1;
-                    map[up][y][3] = 1;
-                    map[x][y][5]--;
-                    map[up][y][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][1] = 0;
-                    map[up][y][3] = 0;
-                    map[x][y][5]++;
-                    map[up][y][5]++;
-                }
-                //清除标记
-                    clear_up(n,m,x,y);
-                int right = find_right(n,m,x,y);
-                if(right){
-                    map[x][y][2] = 1;
-                    map[x][right][4] = 1;
-                    map[x][y][5]--;
-                    map[x][right][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][2] = 0;
-                    map[x][right][4] = 0;
-                    map[x][y][5]++;
-                    map[x][right][5]++; 
-                }
-                //清除标记
-                    clear_right(n,m,x,y);
-                int down = find_down(n,m,x,y);
-                if(down){
-                    map[x][y][3] = 1;
-                    map[down][y][1] = 1;
-                    map[x][y][5]--;
-                    map[down][y][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][3] = 0;
-                    map[down][y][1] = 0;
-                    map[x][y][5]++;
-                    map[down][y][5]++;
-                }
-                    //清除标记
-                    clear_down(n,m,x,y);
-                int left = find_left(n,m,x,y);
-                if(left){
-                    map[x][y][4] = 1;
-                    map[x][left][2] = 1;
-                    map[x][y][5]--;
-                    map[x][left][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][4] = 0;
-                    map[x][left][2] = 0;
-                    map[x][y][5]++;
-                    map[x][left][5]++;   
-                }
-                  //清除标记
-                    clear_left(n,m,x,y); 
-            }
-        }
-        //类型3
-        else if(type == 3){
-            //确定剩余接口数
-            int rem = map[x][y][5];
+            //优先处理剩余接口数为3的节点，强力剪枝
             if(rem == 3){
-                int up,right,down,left;
-                    up = find_up(n,m,x,y);
-                    right = find_right(n,m,x,y);
-                    down = find_down(n,m,x,y);
-                if(up && right && down){
-                    map[x][y][1] = 1;
-                    map[up][y][3] = 1;
-                    map[x][y][2] = 1;
-                    map[x][right][4] = 1;
-                    map[x][y][3] = 1;
-                    map[down][y][1] = 1;
-                    map[x][y][5] -= 3;
-                    map[up][y][5]--;
-                    map[x][right][5]--;
-                    map[down][y][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][1] = 0;
-                    map[up][y][3] = 0;
-                    map[x][y][2] = 0;
-                    map[x][right][4] = 0;
-                    map[x][y][3] = 0;
-                    map[down][y][1] = 0;
-                    map[x][y][5] += 3;
-                    map[up][y][5]++;
-                    map[x][right][5]++;
-                    map[down][y][5]++;
-                }
-                //清除标记
-                    clear_up(n,m,x,y);
-                    clear_right(n,m,x,y);
-                    clear_down(n,m,x,y);
-                    up = find_up(n,m,x,y);
-                    right = find_right(n,m,x,y);
-                    left = find_left(n,m,x,y);
-                if(up && right && left){
-                    map[x][y][1] = 1;
-                    map[up][y][3] = 1;
-                    map[x][y][2] = 1;
-                    map[x][right][4] = 1;
-                    map[x][y][4] = 1;
-                    map[x][left][2] = 1;
-                    map[x][y][5] -= 3;
-                    map[up][y][5]--;
-                    map[x][right][5]--;
-                    map[x][left][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][1] = 0;
-                    map[up][y][3] = 0;
-                    map[x][y][2] = 0;
-                    map[x][right][4] = 0;
-                    map[x][y][4] = 0;
-                    map[x][left][2] = 0;
-                    map[x][y][5] += 3;
-                    map[up][y][5]++;
-                    map[x][right][5]++;
-                    map[x][left][5]++;
-                }
-                //清除标记
-                    clear_up(n,m,x,y);
-                    clear_right(n,m,x,y);
-                    clear_left(n,m,x,y);
-                    up = find_up(n,m,x,y);
-                    down = find_down(n,m,x,y);
-                    left = find_left(n,m,x,y);
-                if(up && down && left){
-                    map[x][y][1] = 1;
-                    map[up][y][3] = 1;
-                    map[x][y][3] = 1;
-                    map[down][y][1] = 1;
-                    map[x][y][4] = 1;
-                    map[x][left][2] = 1;
-                    map[x][y][5] -= 3;
-                    map[up][y][5]--;
-                    map[down][y][5]--;
-                    map[x][left][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][1] = 0;
-                    map[up][y][3] = 0;
-                    map[x][y][3] = 0;
-                    map[down][y][1] = 0;
-                    map[x][y][4] = 0;
-                    map[x][left][2] = 0;
-                    map[x][y][5] += 3;
-                    map[up][y][5]++;
-                    map[down][y][5]++;
-                    map[x][left][5]++;
-                }
-                 //清除标记
-                    clear_up(n,m,x,y);
-                    clear_down(n,m,x,y);
-                    clear_left(n,m,x,y);
-                    right = find_right(n,m,x,y);
-                    down = find_down(n,m,x,y);
-                    left = find_left(n,m,x,y);
-                if(right && down && left){
-                    map[x][y][2] = 1;
-                    map[x][right][4] = 1;
-                    map[x][y][3] = 1;
-                    map[down][y][1] = 1;
-                    map[x][y][4] = 1;
-                    map[x][left][2] = 1;
-                    map[x][y][5] -= 3;
-                    map[x][right][5]--;
-                    map[down][y][5]--;
-                    map[x][left][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][2] = 0;
-                    map[x][right][4] = 0;
-                    map[x][y][3] = 0;
-                    map[down][y][1] = 0;
-                    map[x][y][4] = 0;
-                    map[x][left][2] = 0;
-                    map[x][y][5] += 3;
-                    map[x][right][5]++;
-                    map[down][y][5]++;
-                    map[x][left][5]++;
-                }
-                //清除标记
-                    clear_right(n,m,x,y);
-                    clear_down(n,m,x,y);
-                    clear_left(n,m,x,y);
+                return;
             }
-            //只有2个接口，和2一样
+            //剩余接口数为2或1的节点
+            //剩余2个接口
             else if(rem == 2){
-                int up,right,down,left;
-                    up = find_up(n,m,x,y);
-                    right = find_right(n,m,x,y);
-                if(up && right){
-                    map[x][y][1] = 1;
-                    map[up][y][3] = 1;
-                    map[x][y][2] = 1;
-                    map[x][right][4] = 1;
-                    map[x][y][5] -= 2;
-                    map[up][y][5]--;
-                    map[x][right][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][1] = 0;
-                    map[up][y][3] = 0;
-                    map[x][y][2] = 0;
-                    map[x][right][4] = 0;
-                    map[x][y][5] += 2;
-                    map[up][y][5]++;
-                    map[x][right][5]++;
-                }
-                //清除标记
-                    clear_up(n,m,x,y);
-                    clear_right(n,m,x,y);
-                    up = find_up(n,m,x,y);
-                    down = find_down(n,m,x,y);
-                if(up && down){
-                    map[x][y][1] = 1;
-                    map[up][y][3] = 1;
-                    map[x][y][3] = 1;
-                    map[down][y][1] = 1;
-                    map[x][y][5] -= 2;
-                    map[up][y][5]--;
-                    map[down][y][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][1] = 0;
-                    map[up][y][3] = 0;
-                    map[x][y][3] = 0;
-                    map[down][y][1] = 0;
-                    map[x][y][5] += 2;
-                    map[up][y][5]++;
-                    map[down][y][5]++;
-                }
-                //清除标记
-                    clear_up(n,m,x,y);
-                    clear_down(n,m,x,y);
-                    up = find_up(n,m,x,y);
-                    left = find_left(n,m,x,y);
-                if(up && left){
-                    map[x][y][1] = 1;
-                    map[up][y][3] = 1;
-                    map[x][y][4] = 1;
-                    map[x][left][2] = 1;
-                    map[x][y][5] -= 2;
-                    map[up][y][5]--;
-                    map[x][left][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][1] = 0;
-                    map[up][y][3] = 0;
-                    map[x][y][4] = 0;
-                    map[x][left][2] = 0;
-                    map[x][y][5] += 2;
-                    map[up][y][5]++;
-                    map[x][left][5]++;
-                }
-                //清除标记
-                    clear_up(n,m,x,y);
-                    clear_left(n,m,x,y);
-                    right = find_right(n,m,x,y);
-                    down = find_down(n,m,x,y);
+                int right = find_right(n,m,x,y);
+                int down = find_down(n,m,x,y);
                 if(right && down){
                     map[x][y][2] = 1;
                     map[x][right][4] = 1;
@@ -1015,71 +471,9 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                 //清除标记
                     clear_right(n,m,x,y);
                     clear_down(n,m,x,y);
-                    right = find_right(n,m,x,y);
-                    left = find_left(n,m,x,y);
-                if(right && left){
-                    map[x][y][2] = 1;
-                    map[x][right][4] = 1;
-                    map[x][y][4] = 1;
-                    map[x][left][2] = 1;
-                    map[x][y][5] -= 2;
-                    map[x][right][5]--;
-                    map[x][left][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][2] = 0;
-                    map[x][right][4] = 0;
-                    map[x][y][4] = 0;
-                    map[x][left][2] = 0;
-                    map[x][y][5] += 2;
-                    map[x][right][5]++;
-                    map[x][left][5]++;
-                }
-                //清除标记
-                    clear_right(n,m,x,y);
-                    clear_left(n,m,x,y);
-                 down = find_down(n,m,x,y);
-                 left = find_left(n,m,x,y);
-                if(down && left){
-                    map[x][y][3] = 1;
-                    map[down][y][1] = 1;
-                    map[x][y][4] = 1;
-                    map[x][left][2] = 1;
-                    map[x][y][5] -= 2;
-                    map[down][y][5]--;
-                    map[x][left][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][3] = 0;
-                    map[down][y][1] = 0;
-                    map[x][y][4] = 0;
-                    map[x][left][2] = 0;
-                    map[x][y][5] += 2;
-                    map[down][y][5]++;
-                    map[x][left][5]++;
-                }
-                 //清除标记
-                    clear_down(n,m,x,y);
-                    clear_left(n,m,x,y);
-
             }
-            //如果只有1个接口，与1类似
+            //剩余1个接口
             else{
-                int up = find_up(n,m,x,y);
-                if(up){
-                    map[x][y][1] = 1;
-                    map[up][y][3] = 1;
-                    map[x][y][5]--;
-                    map[up][y][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][1] = 0;
-                    map[up][y][3] = 0;
-                    map[x][y][5]++;
-                    map[up][y][5]++;
-                }
-                //清除标记
-                    clear_up(n,m,x,y);
                 int right = find_right(n,m,x,y);
                 if(right){
                     map[x][y][2] = 1;
@@ -1110,26 +504,10 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
                 }
                 //清除标记
                     clear_down(n,m,x,y);
-                int left = find_left(n,m,x,y);
-                if(left){
-                    map[x][y][4] = 1;
-                    map[x][left][2] = 1;
-                    map[x][y][5]--;
-                    map[x][left][5]--;
-                    back_tracking(n,m,c,c_size,index+1);
-                    if(trigger == 1) return;
-                    map[x][y][4] = 0;
-                    map[x][left][2] = 0;
-                    map[x][y][5]++;
-                    map[x][left][5]++;    
-                }
-                //清除标记
-                    clear_left(n,m,x,y);
             }
+            return;   
         }
-        return;   
-     }
-
+ }
 ```
 
 
