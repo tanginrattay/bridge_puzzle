@@ -45,11 +45,11 @@ int main () {
         }
     } 
 
-    // printmap(n, m);
+    printmap(n, m);
     
-    // optimize(n, m);
+    optimize(n, m);
 
-    // printmap(n, m);
+    printmap(n, m);
 
     int **list = (int **)malloc(2601 * sizeof(int *));
     for (int i = 0; i < 2601; i++) {
