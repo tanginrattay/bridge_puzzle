@@ -68,7 +68,7 @@ revealOptions:
 ### 1. 优化阶段 (`optimize.h`)
 --v--
 **`check_direction_connection` 函数：**
-```cpp [88-90|93-102]
+```cpp [17-19|22-31]
  int check_direction_connection(int i, int j, int dir, int* target_i, int* target_j, int n, int m) {
     int step = 1;
     
@@ -114,7 +114,7 @@ revealOptions:
 * 路径上遇到 `map[i][j][0] == -1` (即边界) 或已连满的节点则返回 `0`。
 --v--
 **`optimize` 函数：**
-```cpp [129-136|141-145|151-166]
+```cpp [12-19|24-28|34-41]
 void optimize(int n, int m) {
     int changed;
     do {
@@ -243,7 +243,7 @@ void optimize(int n, int m) {
 --v--
 ### 2. 回溯阶段 (`backtracking.h`)
 --v--
-```cpp [247-267|332-348|401-478]
+```cpp [1-21]
 int find_up(int n,int m,int x,int y){
     for(int i = x-1;i>0;i--){
         if(map[i][y][0]>0){
@@ -328,6 +328,14 @@ int find_right(int n,int m,int x,int y){
     }
     return 0;
 };
+
+```
+**`find_up/down/left/right` 函数：**
+* 功能与 `check_direction_connection` 类似，但更进一步：
+    * **不仅检查可行性，还同时标记路径上的空节点** (`map[...][0] = -1`)，实现剪枝。
+    * 如果找到目标节点，返回其坐标；如果遇到障碍或边界，返回 `0`。
+--v--
+```cpp [2-18]
 //注意还有清除-1标记的函数
 void clear_up(int n,int m,int x,int y){
     for(int i = x-1;i>0;i--){
@@ -397,6 +405,28 @@ void clear_left(int n,int m,int x,int y){
     return;
 
 };
+
+```
+**`clear_up/down/left/right` 函数：**
+* **回溯的关键操作：** 清除由 `find_` 函数在当前路径上设置的 `-1` 标记及其连接状态，恢复现场，以便进行下一个方向的试探。
+--v--
+
+**`back_tracking` 函数：**
+* **基线条件：** 当 `index == c_size` 时，表示所有有接口的节点都已处理完毕，设置 `trigger = 1` 成功返回。
+* **递归逻辑：** * 根据当前节点 $(x, y)$ 的**初始类型** (`type = map[x][y][0]`) 和**剩余接口数** (`rem = map[x][y][5]`)，确定需要尝试的连线组合。
+    * 例如，`type=1` 时，尝试**上、右、下、左**四个方向的单边连接（1种组合）。
+    * `type=2, rem=2` 时，尝试**上-右, 上-下, ...** 等所有六种双边连接（2种组合）。
+    * **试探 -> 递归 -> 回溯：** 对于每种成功的连线尝试：
+        1.  调用 `find_` 标记路径。
+        2.  更新起点和终点的连接状态和剩余接口数。
+        3.  递归调用 `back_tracking(index+1)`。
+        4.  如果递归成功 (`trigger == 1`) 则立即返回。
+        5.  **回溯：** 恢复连接状态和剩余接口数。
+        6.  调用 `clear_` 清除路径标记。
+
+--v--
+
+```cpp [2-31]
 extern int trigger;
 void back_tracking(int n,int m,int** c,int c_size,int index){
      //终点，num==c_size
@@ -1027,28 +1057,8 @@ void back_tracking(int n,int m,int** c,int c_size,int index){
         return;   
      }
 
-}
 ```
-**`find_up/down/left/right` 函数：**
-* 功能与 `check_direction_connection` 类似，但更进一步：
-    * **不仅检查可行性，还同时标记路径上的空节点** (`map[...][0] = -1`)，实现剪枝。
-    * 如果找到目标节点，返回其坐标；如果遇到障碍或边界，返回 `0`。
---v--
-**`clear_up/down/left/right` 函数：**
-* **回溯的关键操作：** 清除由 `find_` 函数在当前路径上设置的 `-1` 标记及其连接状态，恢复现场，以便进行下一个方向的试探。
---v--
-**`back_tracking` 函数：**
-* **基线条件：** 当 `index == c_size` 时，表示所有有接口的节点都已处理完毕，设置 `trigger = 1` 成功返回。
-* **递归逻辑：** * 根据当前节点 $(x, y)$ 的**初始类型** (`type = map[x][y][0]`) 和**剩余接口数** (`rem = map[x][y][5]`)，确定需要尝试的连线组合。
-    * 例如，`type=1` 时，尝试**上、右、下、左**四个方向的单边连接（1种组合）。
-    * `type=2, rem=2` 时，尝试**上-右, 上-下, ...** 等所有六种双边连接（2种组合）。
-    * **试探 -> 递归 -> 回溯：** 对于每种成功的连线尝试：
-        1.  调用 `find_` 标记路径。
-        2.  更新起点和终点的连接状态和剩余接口数。
-        3.  递归调用 `back_tracking(index+1)`。
-        4.  如果递归成功 (`trigger == 1`) 则立即返回。
-        5.  **回溯：** 恢复连接状态和剩余接口数。
-        6.  调用 `clear_` 清除路径标记。
+
 
 --s--
 
