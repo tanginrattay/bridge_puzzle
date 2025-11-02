@@ -1,3 +1,5 @@
 .vscode/
-main.exe
 generate function.exe
+*.exe
+*.png
+generate function.c

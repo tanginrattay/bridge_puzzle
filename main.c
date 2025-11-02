@@ -99,6 +99,7 @@ int main () {
 
             // run optimization and backtracking as in single run
             optimize(n, m);
+            // printmap(n, m);
 
             int list_size = 0;
             for (int i = 1; i <= n; i++) {
@@ -133,7 +134,7 @@ int main () {
         int milliseconds = (int)(total_ms % 1000LL);
 
         // print final map (result from last run)
-        // printmap(n, m);
+        printmap(n, m);
 
         printf("time:%02d:%02d:%02d.%03d\n", hours, minutes, seconds, milliseconds);
         // loop continues for next (W,n,m)

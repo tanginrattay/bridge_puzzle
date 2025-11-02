@@ -127,8 +127,9 @@ extern int trigger;
                     map[x][y][5] += 2;
                     map[x][right][5]++;
                     map[down][y][5]++;
+                   
                 }
-                // Clear marks
+                 // Clear marks
                     clear_right(n,m,x,y);
                     clear_down(n,m,x,y);
             }
@@ -147,9 +148,9 @@ extern int trigger;
                     map[x][y][5]++;
                     map[x][right][5]++; 
                     // Clear marks
-                    clear_right(n,m,x,y);
+                    
                 }
-                
+                clear_right(n,m,x,y);
                 int down = find_down(n,m,x,y);
                 if(down){
                     map[x][y][3] = 1;
@@ -163,9 +164,9 @@ extern int trigger;
                     map[x][y][5]++;
                     map[down][y][5]++;
                     // Clear marks
-                    clear_down(n,m,x,y);
+                    
                 }
-                
+                clear_down(n,m,x,y);
             }
             return;   
         }
