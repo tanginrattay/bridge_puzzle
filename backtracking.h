@@ -10,7 +10,6 @@
 
 //问题1：0行0列开始
 //问题2：map[i][j][0]=-1
-
 int find_down(int n,int m,int x,int y){
     for(int i = x+1;i<=n;i++){
         if(map[i][y][0]>0){
@@ -20,14 +19,12 @@ int find_down(int n,int m,int x,int y){
             for(int k=x+1;k<i;k++){
                 map[k][y][1] = 1;
                 map[k][y][3] = 1; 
+                map[k][y][0] = -1;   
             }
             return i;
         }
         else if(map[i][y][0] == -1){
             return 0;
-        }
-        else{
-            map[i][y][0] = -1;
         }
     }
     return 0;
@@ -42,14 +39,12 @@ int find_right(int n,int m,int x,int y){
             for(int k=y+1;k<j;k++){
                 map[x][k][2] = 1;
                 map[x][k][4] = 1; 
+                map[x][k][0] = -1;
             }
             return j;
         }
         else if(map[x][j][0] == -1){
             return 0;
-        }
-        else{
-            map[x][j][0] = -1;
         }
     }
     return 0;
@@ -138,7 +133,7 @@ extern int trigger;
                     clear_down(n,m,x,y);
             }
             //剩余1个接口
-            else{
+            else if(rem == 1){
                 int right = find_right(n,m,x,y);
                 if(right){
                     map[x][y][2] = 1;
@@ -151,9 +146,10 @@ extern int trigger;
                     map[x][right][4] = 0;
                     map[x][y][5]++;
                     map[x][right][5]++; 
-                }
-                //清除标记
+                    //清除标记
                     clear_right(n,m,x,y);
+                }
+                
                 int down = find_down(n,m,x,y);
                 if(down){
                     map[x][y][3] = 1;
@@ -166,9 +162,10 @@ extern int trigger;
                     map[down][y][1] = 0;
                     map[x][y][5]++;
                     map[down][y][5]++;
-                }
-                //清除标记
+                    //清除标记
                     clear_down(n,m,x,y);
+                }
+                
             }
             return;   
         }
