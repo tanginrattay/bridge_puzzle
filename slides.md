@@ -79,7 +79,6 @@ if (available_connections == remaining_connections) {
 ```
 --v--
 * **剪枝思想**
-* 1. 提前终止剪枝
 ```cpp
 // 剪枝1：跳过已满足度数的节点
 if (remaining_connections <= 0) continue;
@@ -93,31 +92,7 @@ if (current_i < 1 || current_i > n || current_j < 1 || current_j > m) {
 }
 ```
 --v--
-* 2. 约束传播剪枝
-```cpp
-// 剪枝4：遇到占用空节点立即终止
-if (map[current_i][current_j][0] == -1) {
-    return 0;
-}
 
-// 剪枝5：遇到已满节点立即终止  
-if (map[current_i][current_j][0] > 0) {
-    if (map[current_i][current_j][5] > 0) {
-        // 可连接
-    } else {
-        return 0; // 已满，不可连接
-    }
-}
-```
---v--
-* 3. 空间状态剪枝
-```cpp
-// 剪枝6：迭代收敛检测
-do {
-    changed = 0;
-    // 处理所有节点...
-} while (changed); // 无变化时终止循环
-```
 * **确定条件：** 如果一个节点的**剩余接口数** `map[i][j][5]` 等于其**可连接的邻居节点数** `available_connections`，则该节点必须与所有可连接的邻居建立连线。
 * 不断循环此过程，直到一轮循环中没有任何新的连线被确定，以最大化预处理。
 --v--
